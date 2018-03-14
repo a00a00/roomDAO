@@ -4,8 +4,14 @@ var TokenRDC = artifacts.require("./TokenRDC.sol");
 
 contract('TokenRDC', function(accounts) {
 
-  let DEC = 1000000000000000000;
+  const DEC = 1000000000000000000;
+  let token;
+  
+  beforeEach(async function () {
+    token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );	
+  });
 
+  
   it("should put 39600000^18 coin in the first account", function() {
     return TokenRDC.deployed()
       .then(function(instance) {
@@ -31,41 +37,14 @@ let t1 = web3.eth.getBlock('latest').timestamp;
   });
 */
 
-  it( "test address: 0x01,0x02,0x03", async() => {
-	let dec = 1000000000000000000;
-	let instance = await TokenRDC.deployed();
-
-	let all = await instance.totalSupply.call(); //all tokens count
-
-	let b1 = await instance.balanceOf.call( "0x01" );
-	assert.equal( b1, (all/100*20), "Foundation 20%" );
-
-	b1 = await instance.balanceOf.call( "0x2" );
-	assert.equal( b1, (all/100*10), "Team 10%" ); //6000000*dec
-
-	b1 = await instance.balanceOf.call( "0x3" );
-	assert.equal( b1, (all/100*4), "Bounty, Advisor, Partnership 4%" ); // 2400000*dec	
-
-  });
-
-
-  it( "test startCrowdsale-0", async() => {
-	let instance = await TokenRDC.deployed();
-
-	await instance.startCrowdsale0( "0x100" );	
-
-	let b1 = await instance.balanceOf.call( "0x100" );
-	console.log( "balance on start = " + b1 );
-	assert.equal( b1, 4500000 * DEC, "balance on start" );
-  });
-
-
-
   it( "test new TokenRDC: distrib", async() => {
-	let token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );	
+	//let token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );	
 	let all = await token.totalSupply.call(); //all tokens count
 	
-	let b1 = await token.balanceOf.call( accounts[1] );
+	let b1 = await token.balanceOf.call( accounts[0] );
+	assert.equal( b1, (all/100*66), "Public 66%" );
+	
+	b1 = await token.balanceOf.call( accounts[1] );
 	assert.equal( b1, (all/100*20), "Foundation 20%" );
 	
 	b1 = await token.balanceOf.call( accounts[2] );
@@ -74,7 +53,25 @@ let t1 = web3.eth.getBlock('latest').timestamp;
 	b1 = await token.balanceOf.call( accounts[3] );
 	assert.equal( b1, (all/100*4), "Bounty, Advisor, Partnership 4%" ); // 2400000*dec	
   });
+ 
 
+  it( "test startCrowdsale-0", async() => {
+	//let instance = await TokenRDC.deployed();
+	let beforeVal = await token.balanceOf.call( accounts[0] );
+	await token.startCrowdsale0( accounts[5] );	
+
+	let b1 = await token.balanceOf.call( accounts[5] );	
+	assert.equal( b1, 4500000 * DEC, "balance on start" );
+	
+	let x1 = await token.finishCrowdsale();
+	let afterVal = await token.balanceOf.call( accounts[0] );
+	console.log( "after=" + afterVal + "; before=" + beforeVal);
+	assert.equal( afterVal.valueOf(), beforeVal.valueOf(), "balance after finish" );
+  });
+
+
+
+  
     
   
 });
