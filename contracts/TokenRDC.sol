@@ -30,13 +30,6 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
     uint256 dec = 10 ** uint256(decimals); //1000000000000000000;
     totalSupply_ = INITIAL_SUPPLY;
     
-	/*
-    balances[msg.sender] = 39600000 * dec; // Public 66%
-    balances[_foundation] = 12000000 * dec; // Foundation 20%
-    balances[_team] = 6000000 * dec; // Team 10%
-    balances[_BAP] = 2400000 * dec; // Bounty, Advisor, Partnership 4%
-	*/
-	
 	balances[msg.sender] = INITIAL_SUPPLY;
 	transfer( _foundation, 12000000 * dec ); 	// Foundation 20%
 	transfer( _team, 6000000 * dec );			// Team 10%
