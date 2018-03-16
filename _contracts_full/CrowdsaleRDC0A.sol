@@ -270,6 +270,60 @@ contract Crowdsale {
 
 
 /**
+ * @title WhitelistedCrowdsale
+ * @dev Crowdsale in which only whitelisted users can contribute.
+ */
+contract WhitelistedCrowdsale is Crowdsale, Ownable {
+
+  mapping(address => bool) public whitelist;
+
+  /**
+   * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
+   */
+  modifier isWhitelisted(address _beneficiary) {
+    require(whitelist[_beneficiary]);
+    _;
+  }
+
+  /**
+   * @dev Adds single address to whitelist.
+   * @param _beneficiary Address to be added to the whitelist
+   */
+  function addToWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = true;
+  }
+  
+  /**
+   * @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing. 
+   * @param _beneficiaries Addresses to be added to the whitelist
+   */
+  function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
+      whitelist[_beneficiaries[i]] = true;
+    }
+  }
+
+  /**
+   * @dev Removes single address from whitelist. 
+   * @param _beneficiary Address to be removed to the whitelist
+   */
+  function removeFromWhitelist(address _beneficiary) external onlyOwner {
+    whitelist[_beneficiary] = false;
+  }
+
+  /**
+   * @dev Extend parent behavior requiring beneficiary to be in whitelist.
+   * @param _beneficiary Token beneficiary
+   * @param _weiAmount Amount of wei contributed
+   */
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal isWhitelisted(_beneficiary) {
+    super._preValidatePurchase(_beneficiary, _weiAmount);
+  }
+
+}
+
+
+/**
  * @title TimedCrowdsale
  * @dev Crowdsale accepting contributions only within a time frame.
  */
@@ -320,17 +374,18 @@ contract TimedCrowdsale is Crowdsale {
 }
 
 /**
- * @title CrowdsaleRDC0B
+ * @title CrowdsaleRDC0
  * @dev Crowdsale-0
  */
-contract CrowdsaleRDC0B is TimedCrowdsale, Ownable {
+contract CrowdsaleRDC0A is WhitelistedCrowdsale, TimedCrowdsale {
     
-    function CrowdsaleRDC0B(ERC20 _token, uint256 _startTime, uint256 _finishTime,  uint _rate) TimedCrowdsale(_startTime, _finishTime)  Crowdsale( _rate, msg.sender, _token ) public payable {
+    function CrowdsaleRDC0A(ERC20 _token, uint256 _startTime, uint256 _finishTime,  uint _rate) TimedCrowdsale(_startTime, _finishTime)  Crowdsale( _rate, msg.sender, _token ) public payable {
     }
-        
-		
-	function _forwardFunds() internal {     
-        wallet.transfer(msg.value);
+    
+    
+    function _forwardFunds() internal {
+        //eth don't transfer to another account / деньги не уходят на другой кошелек
+        //wallet.transfer(msg.value);
     }
     
     function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal onlyWhileOpen {
@@ -339,6 +394,8 @@ contract CrowdsaleRDC0B is TimedCrowdsale, Ownable {
     
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
         token.transfer(_beneficiary, _tokenAmount);
-    }	
+    }
 }
+
+
 

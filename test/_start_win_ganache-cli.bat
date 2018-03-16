@@ -1,0 +1,1 @@
+start "ganache-cli (test-1)" ganache-cli.cmd --defaultBalanceEther=13000000 -u 0 -u 1 -u 2 -u 3 -u 4 -u 5 
