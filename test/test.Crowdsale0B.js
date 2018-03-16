@@ -39,10 +39,10 @@ contract('B: Crowdsale0', function(accounts) {
 	let dt = Math.round( (new Date()).getTime()/1000 ) + 3;
 	console.log( ">>>>> now=" + now + ", dt=" + dt + "; xnow=" + latestTime());
     crowd0 = await Crowdsale0B.new( token.address, dt, now+1000000, RATE );
-	if( now > dt ) {
-		await waitMs(1000 * (dt-now));
+	if( now < dt ) {
+		await waitMs(1000 * (dt-now+1));
 	}
-	console.log( ">>>>> new crowd0=" + crowd0.address );
+	console.log( ">>>>> new crowd0B=" + crowd0.address );
   });
 
 
@@ -103,15 +103,15 @@ contract('B: Crowdsale0', function(accounts) {
 	assert.equal( bx2.minus(bx1).valueOf(), sum.valueOf(), "50 ether" );		
   }); 
   
-  it( "test crowdsale-0: buy token - 950 eth", async() => {		
+  it( "test crowdsale-0: buy token - 1000 eth", async() => {		
 	await token.startCrowdsale0( crowd0.address );
 	
-	let sum = web3.toWei(950, "ether");
+	let sum = web3.toWei(1000, "ether");
 	await crowd0.buyTokens( accounts[4], {from: accounts[4], value:sum.valueOf()} );
 	
 	let b2 = await token.balanceOf.call( crowd0.address );		
 	console.log( ">>>>> b2=" + b2 );	
-	assert.equal( bx2.valueOf(), 0, "0 ether" );		
+	assert.equal( b2.valueOf(), 0, "0 ether" );		
   }); 
   
   

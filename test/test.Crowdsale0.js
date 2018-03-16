@@ -15,13 +15,15 @@ contract('Crowdsale0', function(accounts) {
   
   beforeEach(async function () {
     token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );	
-	console.log( ">>>>> token=" + token.address );
 	let now = latestTime();
-	console.log( ">>>>> now=" + now + ", dt=" + (new Date()).getTime()/1000 );
+	let dt = Math.round( (new Date()).getTime()/1000 ) + 3;
+	console.log( ">>>>> now=" + now + ", dt=" + dt + "; xnow=" + latestTime());
 	
-    crowd0 = await Crowdsale0.new( token.address, now+2, now+100000, RATE );
-	await waitMs(3100);
-	console.log( ">>>>> crowd0=" + crowd0.address );
+    crowd0 = await Crowdsale0.new( token.address, dt, now+100000, RATE );
+	if( now < dt ) {
+		await waitMs(1000 * (dt-now));
+	}
+	console.log( ">>>>> new crowd0=" + crowd0.address );
   });
 
 
