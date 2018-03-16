@@ -325,7 +325,7 @@ contract TimedCrowdsale is Crowdsale {
  */
 contract CrowdsaleRDC0 is TimedCrowdsale, Ownable {
     
-    function CrowdsaleRDC0(ERC20 _token, uint256 _startTime, uint256 _finishTime,  uint _rate) TimedCrowdsale(_startTime, _finishTime)  Crowdsale( _rate, msg.sender, _token ) public payable {
+    function CrowdsaleRDC0(ERC20 _token, uint256 _startTime, uint256 _finishTime,  uint _rate, address _wallet ) TimedCrowdsale(_startTime, _finishTime)  Crowdsale( _rate, _wallet, _token ) public payable {
     }
         
 		
@@ -340,5 +340,9 @@ contract CrowdsaleRDC0 is TimedCrowdsale, Ownable {
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
         token.transfer(_beneficiary, _tokenAmount);
     }	
+    
+    function changeWallet( address _wallet ) onlyOwner public {
+		require( _wallet != address(0));
+		wallet = _wallet;
+	}
 }
-

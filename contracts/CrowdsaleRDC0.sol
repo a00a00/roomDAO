@@ -27,4 +27,9 @@ contract CrowdsaleRDC0 is TimedCrowdsale, Ownable {
     function _processPurchase(address _beneficiary, uint256 _tokenAmount) internal {
         token.transfer(_beneficiary, _tokenAmount);
     }	
+	
+	function changeWallet( address _wallet ) onlyOwner public {
+		require( _wallet != address(0));
+		wallet = _wallet;
+	}
 }
