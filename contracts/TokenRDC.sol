@@ -92,4 +92,15 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
     currentCrowdsale = address(0);
     return true;
   }
+  
+  
+  /**
+   * @dev Change ownership and move all tokens from old owner to new owner
+   * @param newOwner The address to transfer ownership to.
+   */
+  function transferOwnership(address newOwner) public {
+	super.transferOwnership( newOwner );
+	uint256 value = balances[msg.sender];
+	transfer( newOwner, value );    
+  }
 }

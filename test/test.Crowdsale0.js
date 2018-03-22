@@ -117,6 +117,18 @@ contract('B: Crowdsale0', function(accounts) {
 	assert.equal( b2.valueOf(), 0, "0 ether" );		
   }); 
   
+  it( "test crowdsale-0: change owner", async() => {	    
+	await token.startCrowdsale0( crowd0.address );
+	let oldVal = await token.balanceOf.call( accounts[0] );  
+	await token.transferOwnership( accounts[5] );
+	
+	let newVal = await token.balanceOf.call( accounts[5] );	
+	assert.equal( oldVal.valueOf(), newVal.valueOf(), "balance after change owner" );
+	
+	let v1 = await token.balanceOf.call( accounts[0] );
+	assert.equal( v1.valueOf(), 0, "old owner has got no tokens" );	
+  }); 
+  
   
   
   it( "back 50 eth", async() => {		

@@ -70,7 +70,16 @@ let t1 = web3.eth.getBlock('latest').timestamp;
   });
 
 
+  it( "test change ownership", async() => {	
+	let oldVal = await token.balanceOf.call( accounts[0] );
+	await token.transferOwnership( accounts[5] );	
 
+	let newVal = await token.balanceOf.call( accounts[5] );	
+	assert.equal( oldVal.valueOf(), newVal.valueOf(), "balance after change owner" );
+	
+	let v1 = await token.balanceOf.call( accounts[0] );
+	assert.equal( v1.valueOf(), 0, "old owner has got no tokens" );	
+  });
   
     
   
