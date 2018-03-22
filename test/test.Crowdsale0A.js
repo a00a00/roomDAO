@@ -6,7 +6,7 @@ var TokenRDC = artifacts.require("./TokenRDC.sol");
 var Crowdsale0 = artifacts.require("./CrowdsaleRDC0A.sol");
 var BigNumber = require('bignumber.js');
 
-contract('Crowdsale0', function(accounts) {
+contract('----- Crowdsale0-A', function(accounts) {
 
   const DEC = 1000000000000000000;
   let token;
@@ -33,7 +33,7 @@ contract('Crowdsale0', function(accounts) {
 	let now = latestTime();	
     crowd0 = await Crowdsale0.new( token.address, now+1, now+100000, RATE );	
 	await waitMs(1000*(2 + (latestTime()-now) ));	
-	console.log( ">>>>> new crowd0A=" + crowd0.address );
+	//console.log( ">>>>> new crowd0A=" + crowd0.address );
   });
 
 

@@ -5,7 +5,7 @@ var TokenRDC = artifacts.require("./TokenRDC.sol");
 var Crowdsale0 = artifacts.require("./CrowdsaleRDC0.sol");
 var BigNumber = require('bignumber.js');
 
-contract('B: Crowdsale0', function(accounts) {
+contract('----- Crowdsale0', function(accounts) {
 
   const DEC = 1000000000000000000;
   let token;
@@ -25,27 +25,14 @@ contract('B: Crowdsale0', function(accounts) {
 		 console.log( "----->>> NOT open: " + tt );
 	 }	 	 
   };
-  /*
-  beforeEach(async function () {
-    token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );		
-	let now = latestTime();	
-	let dt = Math.round( (new Date()).getTime()/1000 ) + 3;
-	console.log( ">>>>> now=" + now + ", dt=" + dt + "; xnow=" + latestTime());
-    crowd0 = await Crowdsale0.new( token.address, dt, now+1000000, RATE, accounts[9] );
-	if( now < dt ) {
-		await waitMs(1000 * (dt-now+1));
-	}
-	console.log( ">>>>> new crowd0B=" + crowd0.address );
-  });
-  */
   
   beforeEach(async function () {
     token = await TokenRDC.new( accounts[1], accounts[2], accounts[3] );		
 	let now = latestTime();		
-    crowd0 = await Crowdsale0.new( token.address, now+1, now+1000000, RATE, accounts[9] );
-	await waitMs(1000*(2 + (latestTime()-now) ));	
+    crowd0 = await Crowdsale0.new( token.address, now+2, now+1000000, RATE, accounts[9] );
+	await waitMs(1000*(3 + (latestTime()-now) ));	
 	console.log( ">>>>> now=" + now + "; xnow=" + latestTime());
-	console.log( ">>>>> new crowd0B=" + crowd0.address );
+	//console.log( ">>>>> new crowd0B=" + crowd0.address );
   });
 
 
@@ -86,7 +73,7 @@ contract('B: Crowdsale0', function(accounts) {
 	assert.equal( diff.valueOf(), tt.valueOf(), "sold tokens: 4500^18" );		
   });
   
-  
+  /*
   it( "test crowdsale-0: buy token - 50 eth", async() => {		
 	await token.startCrowdsale0( crowd0.address );
 	
@@ -116,6 +103,7 @@ contract('B: Crowdsale0', function(accounts) {
 	console.log( ">>>>> b2=" + b2 );	
 	assert.equal( b2.valueOf(), 0, "0 ether" );		
   }); 
+  */
   
   it( "test crowdsale-0: change owner", async() => {	    
 	await token.startCrowdsale0( crowd0.address );
@@ -129,6 +117,40 @@ contract('B: Crowdsale0', function(accounts) {
 	assert.equal( v1.valueOf(), 0, "old owner has got no tokens" );	
   }); 
   
+  it( "test crowdsale-0: buy token - 50 eth", async() => {		
+	await token.startCrowdsale0( crowd0.address );
+	await token.transferOwnership( accounts[7] );
+	await crowd0.transferOwnership( accounts[7] );
+	
+	let bx1 = await web3.eth.getBalance( accounts[9] );
+	console.log( ">>>>>  bx1=" + bx1 );
+	
+	let x3 = await crowd0.hasClosed();
+	console.log( ">>>>> isClosed=" + x3 );
+	
+	let sum = web3.toWei(50, "ether");
+	await crowd0.buyTokens( accounts[4], {from: accounts[4], value:sum.valueOf()} );
+	
+	let b2 = await token.balanceOf.call( crowd0.address );	
+	let bx2 = await web3.eth.getBalance( accounts[9] );
+	console.log( ">>>>> b2=" + b2 + "; eth=" + bx2 );
+	
+	assert.equal( bx2.minus(bx1).valueOf(), sum.valueOf(), "50 ether" );		
+  }); 
+  
+  
+  it( "test crowdsale-0: buy token - 1000 eth", async() => {		
+	await token.startCrowdsale0( crowd0.address );
+	await token.transferOwnership( accounts[7] );
+	await crowd0.transferOwnership( accounts[7] );
+	
+	let sum = web3.toWei(1000, "ether");
+	await crowd0.buyTokens( accounts[4], {from: accounts[4], value:sum.valueOf()} );
+	
+	let b2 = await token.balanceOf.call( crowd0.address );		
+	console.log( ">>>>> b2=" + b2 );	
+	assert.equal( b2.valueOf(), 0, "0 ether" );		
+  }); 
   
   
   it( "back 50 eth", async() => {		
